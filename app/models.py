@@ -24,7 +24,7 @@ class Flight(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, default="")
-    filename: Mapped[str] = mapped_column(String(200), nullable=False)
+    csv_data: Mapped[str] = mapped_column(Text, nullable=False)  # raw CSV stored in DB
     uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     owner: Mapped["User"] = relationship("User", back_populates="flights")

@@ -1,7 +1,6 @@
+import io
 import json
 import math
-import uuid
-from pathlib import Path
 
 import pandas as pd
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
@@ -16,14 +15,11 @@ from app.models import Flight, User
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-UPLOADS_DIR = Path("uploads")
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
-def _parse_flight_csv(filepath: Path) -> dict:
-    df = pd.read_csv(filepath)
-
-    # Normalize column names (strip whitespace)
+def _parse_flight_csv(csv_text: str) -> dict:
+    df = pd.read_csv(io.StringIO(csv_text))
     df.columns = [c.strip() for c in df.columns]
 
     time_col = "Time (ms)"
@@ -32,11 +28,8 @@ def _parse_flight_csv(filepath: Path) -> dict:
     if missing:
         raise ValueError(f"CSV missing columns: {missing}")
 
-    # Altitude derived from barometric pressure
     baseline_kpa = df["Kpa"].head(10).mean()
     df["altitude_ft"] = 44330 * (1 - (df["Kpa"] / baseline_kpa) ** 0.1903) * 3.281
-
-    # Accel magnitude and net
     df["mag"] = (df["x"] ** 2 + df["y"] ** 2 + df["z"] ** 2) ** 0.5
     df["net_accel"] = df["mag"] - 1.0
 
@@ -91,15 +84,11 @@ async def upload_flight(
             status_code=400,
         )
 
-    safe_name = f"{current_user.id}_{uuid.uuid4().hex}.csv"
-    dest = UPLOADS_DIR / safe_name
-    dest.write_bytes(contents)
-
     flight = Flight(
         user_id=current_user.id,
         name=name,
         description=description,
-        filename=safe_name,
+        csv_data=contents.decode("utf-8", errors="replace"),
     )
     db.add(flight)
     db.commit()
@@ -121,14 +110,12 @@ async def view_flight(
     if flight.user_id != current_user.id and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    filepath = UPLOADS_DIR / flight.filename
     try:
-        chart_data = _parse_flight_csv(filepath)
+        chart_data = _parse_flight_csv(flight.csv_data)
+        error = None
     except Exception as e:
         chart_data = None
         error = str(e)
-    else:
-        error = None
 
     return templates.TemplateResponse(
         "flight.html",

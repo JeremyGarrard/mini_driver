@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -42,7 +41,6 @@ if ADMIN_USERNAME and ADMIN_PASSWORD:
 
 app = FastAPI(title="Mini Driver — Rocket Bootcamp")
 
-Path("uploads").mkdir(exist_ok=True)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
