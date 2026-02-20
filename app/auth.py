@@ -2,9 +2,9 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional
 
+import bcrypt
 from fastapi import Cookie, Depends, HTTPException, status
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -14,20 +14,13 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hours
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def _truncate(password: str) -> str:
-    # bcrypt hard limit is 72 bytes
-    return password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(_truncate(password))
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(_truncate(plain), hashed)
+    return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

@@ -3,8 +3,7 @@ uvicorn[standard]
 sqlalchemy
 psycopg2-binary
 python-jose[cryptography]
-passlib[bcrypt]
-bcrypt==4.0.1
+bcrypt
 python-multipart
 pandas
 jinja2
