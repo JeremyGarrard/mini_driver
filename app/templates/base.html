@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Mini Driver{% endblock %} 🚀</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" defer></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="/">🚀 Mini Driver</a>
+    <div class="nav-links">
+      {% if user is defined and user %}
+        <span class="nav-user">{{ user.username }}</span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/upload">Upload Flight</a>
+        {% if user.is_admin %}
+          <a href="/admin" class="nav-admin">Admin</a>
+        {% endif %}
+        <a href="/logout">Logout</a>
+      {% else %}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Rocket Bootcamp &mdash; Mini Driver Data Platform</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Your Flights</h1>
+  <a href="/upload" class="btn btn-primary">+ Upload New Flight</a>
+</div>
+
+{% if flights %}
+  <div class="flight-grid">
+    {% for flight in flights %}
+    <div class="flight-card">
+      <div class="flight-card-top">
+        <span class="flight-icon">🛸</span>
+        <div>
+          <h3><a href="/flight/{{ flight.id }}">{{ flight.name }}</a></h3>
+          <time class="flight-date">{{ flight.uploaded_at.strftime('%b %d, %Y — %H:%M') }}</time>
+        </div>
+      </div>
+      {% if flight.description %}
+        <p class="flight-desc">{{ flight.description }}</p>
+      {% endif %}
+      <a href="/flight/{{ flight.id }}" class="btn btn-outline btn-sm">View Charts →</a>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📂</div>
+    <h2>No flights yet</h2>
+    <p>Upload your first flight CSV to get started!</p>
+    <a href="/upload" class="btn btn-primary">Upload a Flight</a>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ flight.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ flight.name }}</h1>
+    <time class="flight-date">Uploaded {{ flight.uploaded_at.strftime('%B %d, %Y at %H:%M') }}</time>
+    {% if flight.description %}
+      <p class="flight-desc-detail">{{ flight.description }}</p>
+    {% endif %}
+  </div>
+  <a href="/dashboard" class="btn btn-outline">← Dashboard</a>
+</div>
+
+{% if error %}
+  <div class="alert alert-error">
+    <strong>Could not parse CSV:</strong> {{ error }}
+  </div>
+{% elif chart_data %}
+<div class="charts-grid">
+  <div class="chart-card">
+    <h2>Altitude Over Time</h2>
+    <div id="chart-altitude" class="chart"></div>
+  </div>
+  <div class="chart-card">
+    <h2>Net Acceleration Over Time</h2>
+    <div id="chart-accel" class="chart"></div>
+  </div>
+  <div class="chart-card">
+    <h2>X / Y / Z Acceleration Components</h2>
+    <div id="chart-xyz" class="chart"></div>
+  </div>
+  <div class="chart-card">
+    <h2>Temperature Over Time</h2>
+    <div id="chart-temp" class="chart"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const d = {{ chart_data | safe }};
+  const t = d.time;
+
+  const layout = (yTitle, yUnit) => ({
+    margin: { t: 10, r: 20, b: 50, l: 60 },
+    xaxis: { title: "Time (ms)", gridcolor: "#e5e7eb" },
+    yaxis: { title: yUnit ? yTitle + " (" + yUnit + ")" : yTitle, gridcolor: "#e5e7eb" },
+    plot_bgcolor: "#fafafa",
+    paper_bgcolor: "#ffffff",
+    font: { family: "Inter, system-ui, sans-serif", size: 13 },
+  });
+
+  const cfg = { responsive: true, displayModeBar: false };
+
+  Plotly.newPlot("chart-altitude", [{
+    x: t, y: d.altitude, type: "scatter", mode: "lines",
+    line: { color: "#6366f1", width: 2 },
+    name: "Altitude",
+  }], layout("Altitude", "ft"), cfg);
+
+  Plotly.newPlot("chart-accel", [{
+    x: t, y: d.net_accel, type: "scatter", mode: "lines",
+    line: { color: "#f59e0b", width: 2 },
+    name: "Net Accel",
+  }], layout("Net Acceleration", "g"), cfg);
+
+  Plotly.newPlot("chart-xyz", [
+    { x: t, y: d.x, type: "scatter", mode: "lines", name: "X", line: { color: "#ef4444", width: 1.5 } },
+    { x: t, y: d.y, type: "scatter", mode: "lines", name: "Y", line: { color: "#22c55e", width: 1.5 } },
+    { x: t, y: d.z, type: "scatter", mode: "lines", name: "Z", line: { color: "#3b82f6", width: 1.5 } },
+  ], layout("Acceleration Components", "g"), cfg);
+
+  Plotly.newPlot("chart-temp", [{
+    x: t, y: d.temp, type: "scatter", mode: "lines",
+    line: { color: "#ec4899", width: 2 },
+    name: "Temperature",
+  }], layout("Temperature", "°F"), cfg);
+})();
+</script>
+{% else %}
+  <div class="alert alert-error">No chart data available.</div>
+{% endif %}
+{% endblock %}

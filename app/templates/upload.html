@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Upload Flight{% endblock %}
+
+{% block content %}
+<div class="form-wrapper form-wrapper-wide">
+  <h1>Upload Flight Data</h1>
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/upload" enctype="multipart/form-data" class="auth-form">
+    <label for="name">Flight Name</label>
+    <input type="text" id="name" name="name" placeholder="e.g. Launch #3" required maxlength="100" />
+
+    <label for="description">Description <span class="optional">(optional)</span></label>
+    <textarea id="description" name="description" rows="3" placeholder="Notes about this launch..."></textarea>
+
+    <label for="file">CSV File</label>
+    <input type="file" id="file" name="file" accept=".csv" required />
+    <p class="field-hint">
+      Expected columns: <code>Time (ms), x, y, z, Kpa, F</code> — max 10 MB
+    </p>
+
+    <button type="submit" class="btn btn-primary btn-full">Upload &amp; View Charts</button>
+  </form>
+  <p class="form-footer"><a href="/dashboard">← Back to Dashboard</a></p>
+</div>
+{% endblock %}

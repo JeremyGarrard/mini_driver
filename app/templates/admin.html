@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Admin — All Students{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Admin Panel</h1>
+  <span class="badge badge-admin">Instructor View</span>
+</div>
+
+<div class="admin-stats">
+  <div class="stat-card">
+    <div class="stat-num">{{ users | length }}</div>
+    <div class="stat-label">Students</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ flights_by_user.values() | sum(attribute='__len__') }}</div>
+    <div class="stat-label">Total Flights</div>
+  </div>
+</div>
+
+{% for u in users %}
+<div class="admin-user-block">
+  <div class="admin-user-header">
+    <div>
+      <strong>{{ u.username }}</strong>
+      <span class="user-email">{{ u.email }}</span>
+      {% if u.is_admin %}<span class="badge badge-admin">Admin</span>{% endif %}
+    </div>
+    <time class="flight-date">Joined {{ u.created_at.strftime('%b %d, %Y') }}</time>
+  </div>
+
+  {% set user_flights = flights_by_user.get(u.id, []) %}
+  {% if user_flights %}
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Flight Name</th>
+        <th>Description</th>
+        <th>Uploaded</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in user_flights %}
+      <tr>
+        <td>{{ f.id }}</td>
+        <td>{{ f.name }}</td>
+        <td>{{ f.description or "—" }}</td>
+        <td><time>{{ f.uploaded_at.strftime('%b %d, %Y %H:%M') }}</time></td>
+        <td><a href="/flight/{{ f.id }}" class="btn btn-outline btn-sm">View →</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="no-flights">No flights uploaded yet.</p>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

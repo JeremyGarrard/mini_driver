@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-icon">🚀</div>
+  <h1>Welcome to Mini Driver</h1>
+  <p class="hero-sub">
+    Your rocket science data platform. Upload your flight CSV, explore the charts,
+    and see how high your rocket flew!
+  </p>
+  <div class="hero-actions">
+    <a href="/register" class="btn btn-primary">Get Started</a>
+    <a href="/login" class="btn btn-outline">Login</a>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature-card">
+    <div class="feature-icon">📡</div>
+    <h3>Real Sensor Data</h3>
+    <p>Upload CSV files straight from your Raspberry Pi — accelerometer, barometric pressure, and temperature.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📈</div>
+    <h3>Interactive Charts</h3>
+    <p>See altitude, acceleration, and temperature over time with beautiful interactive Plotly graphs.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🏆</div>
+    <h3>Track Your Flights</h3>
+    <p>Keep a log of every launch. Name your flights, add notes, and review past data anytime.</p>
+  </div>
+</section>
+{% endblock %}
