@@ -1,5 +1,6 @@
 uploads/*
 !uploads/.gitkeep
+*.db
 .env
 __pycache__/
 *.pyc
