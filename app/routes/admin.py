@@ -30,5 +30,6 @@ async def admin_view(
             "user": current_user,
             "users": users,
             "flights_by_user": flights_by_user,
+            "total_flights": len(flights),
         },
     )
