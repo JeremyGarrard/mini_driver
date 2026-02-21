@@ -4,6 +4,7 @@ sqlalchemy
 psycopg2-binary
 python-jose[cryptography]
 bcrypt
+httpx
 python-multipart
 pandas
 jinja2
